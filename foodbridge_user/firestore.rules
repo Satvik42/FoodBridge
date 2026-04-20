@@ -1,0 +1,78 @@
+// firestore.rules — FoodBridge Smart System
+// Deploy: firebase deploy --only firestore:rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ───────────────────────────────────────────────────────
+    function isAuth()      { return request.auth != null; }
+    function uid()         { return request.auth.uid; }
+    function userDoc()     { return get(/databases/$(database)/documents/users/$(uid())).data; }
+    function role()        { return userDoc().role; }
+    function isAdmin()     { return isAuth() && role() == 'admin'; }
+    function isVolunteer() { return isAuth() && (role() == 'volunteer' || role() == 'admin'); }
+
+    // ── users/{uid} ───────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read:   if isAuth();
+      allow create: if isAuth() && uid() == userId;
+      allow update: if isAuth() && (uid() == userId || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ── surplus_food/{id} ─────────────────────────────────────────────
+    match /surplus_food/{id} {
+      allow read:   if isAuth();
+      allow create: if isAuth()
+          && request.resource.data.createdBy == uid()
+          && request.resource.data.status == 'available';
+      allow update: if isAdmin()
+          || (isVolunteer() && onlyUpdating([
+              'status', 'acceptedBy', 'acceptedByName']));
+      allow delete: if isAdmin();
+    }
+
+    // ── requests/{id} ────────────────────────────────────────────────
+    match /requests/{id} {
+      allow create: if isAuth()
+          && request.resource.data.userId == uid()
+          && request.resource.data.status == 'pending';
+
+      allow read: if isAuth();
+
+      allow update: if isAdmin()
+          || (isVolunteer() && (
+            // pending → accepted (atomic transaction)
+            (resource.data.status == 'pending'
+              && request.resource.data.status == 'accepted'
+              && request.resource.data.acceptedBy == uid()
+              && onlyUpdating(['status','acceptedBy','volunteerName','acceptedTime']))
+            ||
+            // accepted → completed (only accepting volunteer)
+            (resource.data.status == 'accepted'
+              && resource.data.acceptedBy == uid()
+              && request.resource.data.status == 'completed'
+              && onlyUpdating(['status','completedTime']))
+          ));
+
+      allow delete: if isAdmin();
+    }
+
+    // ── user_reports/{id} ────────────────────────────────────────────
+    match /user_reports/{id} {
+      allow create: if isAuth()
+          && request.resource.data.userId == uid();
+      allow read:   if isAdmin()
+          || (isAuth() && resource.data.userId == uid());
+      allow update: if isAdmin() && onlyUpdating(['status']);
+      allow delete: if isAdmin();
+    }
+
+    // ── Helper ────────────────────────────────────────────────────────
+    function onlyUpdating(fields) {
+      return request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly(fields);
+    }
+  }
+}

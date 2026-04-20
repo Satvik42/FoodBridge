@@ -1,0 +1,12 @@
+﻿
+   info - The imported package 'google_fonts' isn't a dependency of the importing package - lib\screens\needs_map_screen.dart:2:8 - depend_on_referenced_packages
+  error - The name 'SectionTitle' isn't a class - lib\screens\needs_map_screen.dart:27:21 - creation_with_non_type
+  error - The getter 'coralMid' isn't defined for the type 'AppColors' - lib\screens\needs_map_screen.dart:56:50 - undefined_getter
+  error - The getter 'greenMid' isn't defined for the type 'AppColors' - lib\screens\needs_map_screen.dart:60:50 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\needs_map_screen.dart:107:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\needs_map_screen.dart:109:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\needs_map_screen.dart:150:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\needs_map_screen.dart:154:35 - deprecated_member_use
+  error - The method 'SeverityBar' isn't defined for the type '_NeedsMapScreenState' - lib\screens\needs_map_screen.dart:180:13 - undefined_method
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\needs_map_screen.dart:225:35 - deprecated_member_use
+
