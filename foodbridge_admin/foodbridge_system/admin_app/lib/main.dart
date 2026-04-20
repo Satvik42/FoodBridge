@@ -15,6 +15,7 @@ import 'screens/admin_login_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/admin_surplus_screen.dart';
 import 'screens/admin_requests_screen.dart';
+import 'screens/admin_waste_screen.dart';
 import 'screens/admin_reports_screen.dart';
 
 Future<void> main() async {
@@ -132,6 +133,7 @@ class _AdminShellState extends State<AdminShell> {
     AdminDashboardScreen(),
     AdminSurplusScreen(),
     AdminRequestsScreen(),
+    AdminWasteScreen(),
     AdminReportsScreen(),
   ];
 
@@ -139,6 +141,7 @@ class _AdminShellState extends State<AdminShell> {
     _NavItem(icon: Icons.dashboard_outlined,   active: Icons.dashboard,      label: 'Dashboard'),
     _NavItem(icon: Icons.inventory_2_outlined, active: Icons.inventory_2,    label: 'Surplus'),
     _NavItem(icon: Icons.pending_outlined,     active: Icons.pending,        label: 'Requests'),
+    _NavItem(icon: Icons.recycling_outlined,   active: Icons.recycling,      label: 'Waste'),
     _NavItem(icon: Icons.flag_outlined,        active: Icons.flag,           label: 'Reports',
         isAlert: true),
   ];

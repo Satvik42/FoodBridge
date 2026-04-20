@@ -111,6 +111,33 @@ class AdminDashboardScreen extends StatelessWidget {
                         delta: '${s.manualAssignedCount} manual',
                       )),
                     ]),
+                    const SizedBox(height: 12),
+
+                    // Row 5: W2R Insights
+                    Row(children: [
+                      Expanded(child: AdminStatCard(
+                        value: '${s.totalBiogas}',
+                        label: 'To Biogas',
+                        icon: Icons.ev_station_rounded,
+                        color: const Color(0xFF4CAF50),
+                        bg: const Color(0xFFE8F5E9),
+                      )),
+                      const SizedBox(width: 12),
+                      Expanded(child: AdminStatCard(
+                        value: '${s.totalFarmer}',
+                        label: 'To Farmers',
+                        icon: Icons.agriculture_rounded,
+                        color: const Color(0xFFFF9800),
+                        bg: const Color(0xFFFFF3E0),
+                      )),
+                    ]),
+                    const SizedBox(height: 12),
+
+                    // Waste reduction %
+                    _WasteReductionMetric(
+                      totalExpired: s.expiredItems + s.totalBiogas + s.totalFarmer + s.totalDiscarded,
+                      totalRedirected: s.totalBiogas + s.totalFarmer,
+                    ),
 
                     // ── Requests by area ─────────────────────────────
                     if (s.requestsByArea.isNotEmpty) ...[
@@ -216,6 +243,70 @@ class AdminDashboardScreen extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class _WasteReductionMetric extends StatelessWidget {
+  final int totalExpired;
+  final int totalRedirected;
+
+  const _WasteReductionMetric({
+    required this.totalExpired,
+    required this.totalRedirected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final percentage = totalExpired > 0 
+        ? (totalRedirected / totalExpired) * 100 
+        : 0.0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AdminColors.cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AdminColors.border, width: 0.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Waste Reduction Impact', style: GoogleFonts.syne(
+                  fontSize: 13, fontWeight: FontWeight.w700,
+                  color: AdminColors.textPrimary)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text('${percentage.toStringAsFixed(1)}%', style: GoogleFonts.syne(
+                    fontSize: 12, fontWeight: FontWeight.w800,
+                    color: const Color(0xFF4CAF50))),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: totalExpired > 0 ? totalRedirected / totalExpired : 0,
+              minHeight: 10,
+              backgroundColor: AdminColors.bg2,
+              valueColor: const AlwaysStoppedAnimation(Color(0xFF4CAF50)),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$totalRedirected items redirected of $totalExpired total waste items',
+            style: GoogleFonts.dmSans(fontSize: 11, color: AdminColors.textMuted),
+          ),
+        ],
+      ),
     );
   }
 }

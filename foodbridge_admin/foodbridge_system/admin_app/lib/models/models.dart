@@ -177,6 +177,9 @@ class SurplusFood {
   final double lat;
   final double lng;
   final String imageEmoji;
+  final String? disposalType;        // NEW: biogas | farmer | discard
+  final DateTime? redirectedAt;     // NEW
+  final String? suggestedAction;    // NEW: auto-calc suggestion
 
   const SurplusFood({
     required this.id,
@@ -198,6 +201,9 @@ class SurplusFood {
     this.lat = 12.9716,
     this.lng = 77.5946,
     this.imageEmoji = '🍱',
+    this.disposalType,
+    this.redirectedAt,
+    this.suggestedAction,
   });
 
   factory SurplusFood.fromFirestore(String docId, Map<String, dynamic> d) {
@@ -227,6 +233,9 @@ class SurplusFood {
       lat:                  (d['lat'] as num?)?.toDouble()  ?? 12.9716,
       lng:                  (d['lng'] as num?)?.toDouble()  ?? 77.5946,
       imageEmoji:           d['imageEmoji']           as String? ?? '🍱',
+      disposalType:         d['disposalType']         as String?,
+      redirectedAt:         d['redirectedAt'] != null ? ts(d['redirectedAt']) : null,
+      suggestedAction:      d['suggestedAction']      as String?,
     );
   }
 
@@ -250,6 +259,9 @@ class SurplusFood {
     'lat':            lat,
     'lng':            lng,
     'imageEmoji':     imageEmoji,
+    if (disposalType    != null) 'disposalType':    disposalType,
+    if (redirectedAt    != null) 'redirectedAt':    redirectedAt!.toIso8601String(),
+    if (suggestedAction != null) 'suggestedAction': suggestedAction,
   };
 
   FoodListing toFoodListing() {
@@ -626,6 +638,9 @@ class AdminStats {
   final int manualAssignedCount;           // NEW
   final Map<String, int> requestsByArea;  // NEW — location grouping
   final List<VolunteerPerformance> volunteerPerformance; // NEW
+  final int totalBiogas;         // NEW: W2R metrics
+  final int totalFarmer;         // NEW: W2R metrics
+  final int totalDiscarded;      // NEW: W2R metrics
 
   const AdminStats({
     this.totalReports        = 0,
@@ -639,6 +654,9 @@ class AdminStats {
     this.manualAssignedCount = 0,
     this.requestsByArea      = const {},
     this.volunteerPerformance = const [],
+    this.totalBiogas         = 0,
+    this.totalFarmer         = 0,
+    this.totalDiscarded      = 0,
   });
 }
 

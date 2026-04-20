@@ -443,7 +443,43 @@ class FirebaseService {
   // ═══════════════════════════════════════════════════════════════════
 
   Future<void> markSurplusExpired(String surplusId) async {
-    await _db.collection('surplus_food').doc(surplusId).update({'status': 'expired'});
+    final snap = await _db.collection('surplus_food').doc(surplusId).get();
+    if (!snap.exists) return;
+    final food = SurplusFood.fromFirestore(snap.id, snap.data()!);
+    final suggestion = _getSuggestedAction(food);
+
+    await _db.collection('surplus_food').doc(surplusId).update({
+      'status':          'expired',
+      'suggestedAction': suggestion,
+    });
+  }
+
+  String _getSuggestedAction(SurplusFood food) {
+    final text = (food.foodType + ' ' + food.description).toLowerCase();
+    if (text.contains('biryani') ||
+        text.contains('dal') ||
+        text.contains('soup') ||
+        text.contains('juice') ||
+        text.contains('cooked') ||
+        text.contains('curry')) {
+      return 'biogas';
+    }
+    if (text.contains('bread') ||
+        text.contains('vegetable') ||
+        text.contains('fruit') ||
+        text.contains('organic') ||
+        text.contains('dry')) {
+      return 'farmer';
+    }
+    return 'discard';
+  }
+
+  Future<void> redirectWaste(String id, String disposalType) async {
+    await _db.collection('surplus_food').doc(id).update({
+      'status':       'redirected',
+      'disposalType': disposalType,
+      'redirectedAt': FieldValue.serverTimestamp(),
+    });
   }
 
   /// Force assign a specific volunteer to a request.
@@ -465,6 +501,13 @@ class FirebaseService {
       'completedTime': FieldValue.serverTimestamp(),
       'adminOverride': true,
     });
+  }
+
+  Future<void> markExpiredAndCancelRequest(String surplusId, String requestId) async {
+    await markSurplusExpired(surplusId);
+    await _db.collection('requests').doc(requestId).update({'status': 'cancelled'});
+    // Mark volunteer available again
+    await _setVolunteerAvailability(_uid, true);
   }
 
   Future<void> deleteSurplusFood(String surplusId) async =>
@@ -566,6 +609,11 @@ class FirebaseService {
           .length;
       final manualCount = completedDocs.length + activeReqs - autoCount;
 
+      // W2R Metrics
+      final biogas = surplus.where((d) => d.data()['disposalType'] == 'biogas').length;
+      final farmer = surplus.where((d) => d.data()['disposalType'] == 'farmer').length;
+      final disc   = surplus.where((d) => d.data()['disposalType'] == 'discard').length;
+
       // Requests grouped by location area
       final Map<String, int> byArea = {};
       for (final d in requests) {
@@ -620,6 +668,9 @@ class FirebaseService {
         manualAssignedCount: manualCount.clamp(0, 999999),
         requestsByArea:      byArea,
         volunteerPerformance: perfList,
+        totalBiogas:         biogas,
+        totalFarmer:         farmer,
+        totalDiscarded:      disc,
       );
     }
 

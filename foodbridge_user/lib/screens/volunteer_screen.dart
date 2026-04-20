@@ -521,8 +521,26 @@ class _TaskCardState extends State<_TaskCard> {
                       ),
                     ),
                   ),
-                ])
-              : SizedBox(
+                ]),
+              if (_accepted) ...[
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _handleMarkExpired(context),
+                    icon: const Icon(Icons.warning_amber_rounded, size: 16),
+                    label: const Text('Report as Expired / Spoiled'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.coral,
+                      side: const BorderSide(color: AppColors.coral),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+              ],
+              if (!_accepted)
+                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _accepting ? null : _handleAccept,
@@ -577,6 +595,41 @@ class _TaskCardState extends State<_TaskCard> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _completing = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $e', style: GoogleFonts.dmSans(fontSize: 13)),
+        backgroundColor: AppColors.coral, behavior: SnackBarBehavior.floating,
+      ));
+    }
+  }
+
+  Future<void> _handleMarkExpired(BuildContext ctx) async {
+    final ok = await showDialog<bool>(
+      context: ctx,
+      builder: (c) => AlertDialog(
+        title: Text('Report Expired?', style: GoogleFonts.syne(fontWeight: FontWeight.w700)),
+        content: Text('Mark this food as expired or spoiled? It will be redirected for waste management.',
+            style: GoogleFonts.dmSans()),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(c, true),
+              child: const Text('Yes, Report', style: TextStyle(color: AppColors.coral))),
+        ],
+      ),
+    );
+
+    if (ok != true) return;
+
+    try {
+      await _svc.markExpiredAndCancelRequest(widget.request.foodId, widget.request.id);
+      
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Food reported as expired. Admin notified.',
+            style: GoogleFonts.dmSans(fontSize: 13)),
+        backgroundColor: AppColors.coral, behavior: SnackBarBehavior.floating,
+      ));
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error: $e', style: GoogleFonts.dmSans(fontSize: 13)),
         backgroundColor: AppColors.coral, behavior: SnackBarBehavior.floating,
