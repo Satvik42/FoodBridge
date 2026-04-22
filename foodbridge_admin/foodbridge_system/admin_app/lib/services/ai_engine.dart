@@ -194,7 +194,6 @@ class MatchResult {
   });
 
   bool get shouldAutoAssign => confidence >= 80;
-  int get score => confidence; // Legacy support for Admin app
 }
 
 class WasteRedirect {

@@ -260,60 +260,8 @@ class _RequestCard extends StatelessWidget {
 
         const SizedBox(height: 14),
         _StatusStepper(status: request.status),
-
-        if (request.status != RequestStatus.cancelled) ...[
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () => _handleMarkExpired(context),
-              icon: const Icon(Icons.warning_amber_rounded, size: 16),
-              label: const Text('Report as Spoiled / Expired'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.coral,
-                side: const BorderSide(color: AppColors.coral),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-          ),
-        ],
       ]),
     );
-  }
-
-  Future<void> _handleMarkExpired(BuildContext ctx) async {
-    final ok = await showDialog<bool>(
-      context: ctx,
-      builder: (c) => AlertDialog(
-        title: Text('Report Spoiled?', style: GoogleFonts.syne(fontWeight: FontWeight.w700)),
-        content: Text('Mark this food as spoiled or expired? This helps us manage waste sustainably.',
-            style: GoogleFonts.dmSans()),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(c, true),
-              child: const Text('Yes, Report', style: TextStyle(color: AppColors.coral))),
-        ],
-      ),
-    );
-
-    if (ok != true) return;
-
-    try {
-      final svc = FirebaseService();
-      await svc.markSurplusExpired(request.foodId);
-      
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text('Food reported as spoiled. Admin notified for waste management.',
-            style: GoogleFonts.dmSans(fontSize: 13)),
-        backgroundColor: AppColors.coral, behavior: SnackBarBehavior.floating,
-      ));
-    } catch (e) {
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text('Error: $e', style: GoogleFonts.dmSans(fontSize: 13)),
-        backgroundColor: AppColors.coral, behavior: SnackBarBehavior.floating,
-      ));
-    }
   }
 
   Widget _detail(IconData icon, String label, String val) {

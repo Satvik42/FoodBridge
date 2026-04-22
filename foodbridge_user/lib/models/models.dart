@@ -290,7 +290,6 @@ class FoodRequest {
   final String? acceptedBy,volunteerName,suggestedVolunteerId,assignedVolunteerId,matchedFoodId;
   final DateTime? acceptedTime,completedTime;
   final bool adminOverride;
-  final int matchConfidence;
   final double lat,lng;
 
   const FoodRequest({
@@ -301,7 +300,6 @@ class FoodRequest {
     this.acceptedBy,this.volunteerName,this.suggestedVolunteerId,
     this.assignedVolunteerId,this.matchedFoodId,
     this.acceptedTime,this.completedTime,
-    this.matchConfidence=0,
     this.adminOverride=false,this.lat=12.9716,this.lng=77.5946,this.locationArea='',
   });
 
@@ -321,7 +319,6 @@ class FoodRequest {
       matchedFoodId:d['matchedFoodId']as String?,
       acceptedTime:d['acceptedTime']!=null?ts(d['acceptedTime']):null,
       completedTime:d['completedTime']!=null?ts(d['completedTime']):null,
-      matchConfidence:d['matchConfidence']as int? ??0,
       adminOverride:d['adminOverride']as bool? ??false,
       lat:(d['lat']as num?)?.toDouble()??12.9716,lng:(d['lng']as num?)?.toDouble()??77.5946,
       locationArea:d['locationArea']as String? ??'',
@@ -340,7 +337,6 @@ class FoodRequest {
     if(matchedFoodId!=null)'matchedFoodId':matchedFoodId,
     if(acceptedTime!=null)'acceptedTime':acceptedTime!.toIso8601String(),
     if(completedTime!=null)'completedTime':completedTime!.toIso8601String(),
-    if(matchConfidence>0)'matchConfidence':matchConfidence,
     if(adminOverride)'adminOverride':true,
     'lat':lat,'lng':lng,'locationArea':locationArea,
   };
@@ -382,7 +378,6 @@ class AdminStats {
   final int totalReports,activeRequests,completedDeliveries,activeVolunteers;
   final int expiredItems,pendingUserReports,autoAssignedCount,manualAssignedCount;
   final int wasteRedirectedCount,foodSavedCount;
-  final int totalBiogas, totalFarmer, totalDiscarded;
   final double avgDeliveryMinutes;
   final Map<String,int> requestsByArea;
   final List<VolunteerPerformance> volunteerPerformance;
@@ -393,40 +388,10 @@ class AdminStats {
     this.activeVolunteers=0,this.expiredItems=0,this.pendingUserReports=0,
     this.autoAssignedCount=0,this.manualAssignedCount=0,
     this.wasteRedirectedCount=0,this.foodSavedCount=0,
-    this.totalBiogas=0, this.totalFarmer=0, this.totalDiscarded=0,
     this.avgDeliveryMinutes=0.0,
     this.requestsByArea=const{},this.volunteerPerformance=const[],
     this.aiInsights=const[],
   });
-
-  AdminStats copyWith({
-    int? totalReports, activeRequests, completedDeliveries, activeVolunteers,
-    int? expiredItems, pendingUserReports, autoAssignedCount, manualAssignedCount,
-    int? wasteRedirectedCount, foodSavedCount,
-    int? totalBiogas, totalFarmer, totalDiscarded,
-    double? avgDeliveryMinutes,
-    Map<String,int>? requestsByArea,
-    List<VolunteerPerformance>? volunteerPerformance,
-    List<AiInsight>? aiInsights,
-  }) => AdminStats(
-    totalReports: totalReports ?? this.totalReports,
-    activeRequests: activeRequests ?? this.activeRequests,
-    completedDeliveries: completedDeliveries ?? this.completedDeliveries,
-    activeVolunteers: activeVolunteers ?? this.activeVolunteers,
-    expiredItems: expiredItems ?? this.expiredItems,
-    pendingUserReports: pendingUserReports ?? this.pendingUserReports,
-    autoAssignedCount: autoAssignedCount ?? this.autoAssignedCount,
-    manualAssignedCount: manualAssignedCount ?? this.manualAssignedCount,
-    wasteRedirectedCount: wasteRedirectedCount ?? this.wasteRedirectedCount,
-    foodSavedCount: foodSavedCount ?? this.foodSavedCount,
-    totalBiogas: totalBiogas ?? this.totalBiogas,
-    totalFarmer: totalFarmer ?? this.totalFarmer,
-    totalDiscarded: totalDiscarded ?? this.totalDiscarded,
-    avgDeliveryMinutes: avgDeliveryMinutes ?? this.avgDeliveryMinutes,
-    requestsByArea: requestsByArea ?? this.requestsByArea,
-    volunteerPerformance: volunteerPerformance ?? this.volunteerPerformance,
-    aiInsights: aiInsights ?? this.aiInsights,
-  );
 }
 
 class VolunteerPerformance {
@@ -439,7 +404,7 @@ class VolunteerPerformance {
     required this.volunteerName,
     required this.tasksCompleted,
     required this.avgDeliveryMinutes,
-    this.performanceScore=0.0,
+    required this.performanceScore,
   });
 }
 

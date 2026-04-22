@@ -289,22 +289,6 @@ class _RequestCard extends StatelessWidget {
                 'Vol: ${request.volunteerName}'),
           if (request.suggestedVolunteerId != null)
             _chip(Icons.auto_awesome_outlined, 'Auto-matched'),
-          if (request.matchConfidence > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AdminColors.accentL,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AdminColors.accent.withOpacity(0.3), width: 0.5),
-              ),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.psychology_outlined, size: 10, color: AdminColors.accent),
-                const SizedBox(width: 4),
-                Text('${request.matchConfidence}% Confidence',
-                    style: GoogleFonts.syne(
-                        fontSize: 9, fontWeight: FontWeight.w800, color: AdminColors.accent)),
-              ]),
-            ),
           if (request.adminOverride)
             _chip(Icons.admin_panel_settings_outlined, 'Admin override'),
           if (mins != null)

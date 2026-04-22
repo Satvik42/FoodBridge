@@ -44,6 +44,20 @@ class FirebaseService {
   // SMART VOLUNTEER MATCHING
   // ═══════════════════════════════════════════════════════════════════
 
+  /// Haversine distance between two lat/lng points in km.
+  static double _haversine(double lat1, double lng1, double lat2, double lng2) {
+    const r = 6371.0;
+    final dLat = _deg2rad(lat2 - lat1);
+    final dLng = _deg2rad(lng2 - lng1);
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_deg2rad(lat1)) * math.cos(_deg2rad(lat2)) *
+            math.sin(dLng / 2) * math.sin(dLng / 2);
+    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    return r * c;
+  }
+
+  static double _deg2rad(double deg) => deg * (math.pi / 180);
+
   /// Find the best available volunteer for a food location.
   /// Returns null if no volunteers found.
   Future<MatchResult?> findBestVolunteer({
@@ -59,15 +73,25 @@ class FirebaseService {
 
       if (snap.docs.isEmpty) return null;
 
-      final volunteers = snap.docs
-          .map((d) => AppUser.fromMap(d.id, d.data()))
-          .toList();
+      MatchResult? best;
+      for (final doc in snap.docs) {
+        final d    = doc.data();
+        final lat  = (d['lat'] as num?)?.toDouble()  ?? 12.9716;
+        final lng  = (d['lng'] as num?)?.toDouble()  ?? 77.5946;
+        final dist = MatchEngine.haversine(foodLat, foodLng, lat, lng);
+        final conf = (100 - (dist * 10)).round().clamp(0, 100);
 
-      return MatchEngine.findBest(
-        foodLat: foodLat,
-        foodLng: foodLng,
-        volunteers: volunteers,
-      );
+        if (best == null || conf > best.confidence) {
+          best = MatchResult(
+            volunteerId:   doc.id,
+            volunteerName: d['name'] as String? ?? 'Volunteer',
+            distanceKm:    double.parse(dist.toStringAsFixed(1)),
+            performanceScore: (d['performanceScore'] as num?)?.toDouble() ?? 50.0,
+            confidence:    conf,
+          );
+        }
+      }
+      return best;
     } catch (e) {
       debugPrint('[FS] findBestVolunteer: $e');
       return null;
@@ -421,43 +445,7 @@ class FirebaseService {
   // ═══════════════════════════════════════════════════════════════════
 
   Future<void> markSurplusExpired(String surplusId) async {
-    final snap = await _db.collection('surplus_food').doc(surplusId).get();
-    if (!snap.exists) return;
-    final food = SurplusFood.fromFirestore(snap.id, snap.data()!);
-    final suggestion = _getSuggestedAction(food);
-
-    await _db.collection('surplus_food').doc(surplusId).update({
-      'status':          'expired',
-      'suggestedAction': suggestion,
-    });
-  }
-
-  String _getSuggestedAction(SurplusFood food) {
-    final text = (food.foodType + ' ' + food.description).toLowerCase();
-    if (text.contains('biryani') ||
-        text.contains('dal') ||
-        text.contains('soup') ||
-        text.contains('juice') ||
-        text.contains('cooked') ||
-        text.contains('curry')) {
-      return 'biogas';
-    }
-    if (text.contains('bread') ||
-        text.contains('vegetable') ||
-        text.contains('fruit') ||
-        text.contains('organic') ||
-        text.contains('dry')) {
-      return 'farmer';
-    }
-    return 'discard';
-  }
-
-  Future<void> redirectWaste(String id, String disposalType) async {
-    await _db.collection('surplus_food').doc(id).update({
-      'status':       'redirected',
-      'disposalType': disposalType,
-      'redirectedAt': FieldValue.serverTimestamp(),
-    });
+    await _db.collection('surplus_food').doc(surplusId).update({'status': 'expired'});
   }
 
   /// Force assign a specific volunteer to a request.
@@ -580,11 +568,6 @@ class FirebaseService {
           .length;
       final manualCount = completedDocs.length + activeReqs - autoCount;
 
-      // W2R Metrics
-      final biogas = surplus.where((d) => d.data()['disposalType'] == 'biogas').length;
-      final farmer = surplus.where((d) => d.data()['disposalType'] == 'farmer').length;
-      final disc   = surplus.where((d) => d.data()['disposalType'] == 'discard').length;
-
       // Requests grouped by location area
       final Map<String, int> byArea = {};
       for (final d in requests) {
@@ -624,10 +607,25 @@ class FirebaseService {
         avgDeliveryMinutes: e.value['count'] > 0
             ? (e.value['totalMins'] as int) / (e.value['count'] as int)
             : 0.0,
+        performanceScore: 50.0, // AI Engine will update this on Next completion
       )).toList()
         ..sort((a, b) => b.tasksCompleted.compareTo(a.tasksCompleted));
 
-      final stats = AdminStats(
+      // Generate AI Insights using the engine
+      final insights = InsightEngine.generate(AdminStats(
+        totalReports:        surplus.length,
+        activeRequests:      activeReqs,
+        completedDeliveries: completedDocs.length,
+        activeVolunteers:    activeVols,
+        expiredItems:        expiredItems,
+        pendingUserReports:  pendingReports,
+        avgDeliveryMinutes:  avgDelivery,
+        wasteRedirectedCount: expiredItems, // Proxy for now
+        foodSavedCount:      completedDocs.length, // Proxy for now
+        requestsByArea:      byArea,
+      ));
+
+      return AdminStats(
         totalReports:        surplus.length,
         activeRequests:      activeReqs,
         completedDeliveries: completedDocs.length,
@@ -639,14 +637,7 @@ class FirebaseService {
         manualAssignedCount: manualCount.clamp(0, 999999),
         requestsByArea:      byArea,
         volunteerPerformance: perfList,
-        totalBiogas:         biogas,
-        totalFarmer:         farmer,
-        totalDiscarded:      disc,
-      );
-
-      // AI: Generate live insights
-      return stats.copyWith(
-        aiInsights: InsightEngine.generate(stats),
+        aiInsights:          insights,
       );
     }
 
@@ -663,55 +654,6 @@ class FirebaseService {
       },
     );
     return ctrl.stream;
-  }
-
-  // ── AI Maintenance Sweep ──────────────────────────────────────────
-  Future<Map<String, int>> runAutoMaintenanceSweep() async {
-    final stats = {'expired': 0, 'redirected': 0, 'cancelled': 0};
-    try {
-      final surplusSnap = await _db.collection('surplus_food').where('status', isEqualTo: 'available').get();
-      final requestSnap = await _db.collection('requests').where('status', isEqualTo: 'pending').get();
-
-      final batch = _db.batch();
-      int count = 0;
-
-      for (final doc in surplusSnap.docs) {
-        final s = SurplusFood.fromFirestore(doc.id, doc.data());
-        if (AutoStatusEngine.shouldAutoExpire(s)) {
-          batch.update(doc.reference, {'status': 'expired'});
-          stats['expired'] = (stats['expired'] ?? 0) + 1;
-          count++;
-        }
-        final waste = WasteEngine.evaluate(
-          surplusId: s.id, foodType: s.foodType, expiryStatus: s.expiryStatus,
-          quantity: s.quantity, timestamp: s.timestamp, nearbyRequestCount: 0,
-        );
-        if (waste != null) {
-          batch.update(doc.reference, {
-            'status': 'redirected',
-            'autoRedirect': true,
-            'wasteType': waste.destination,
-            'wasteReason': waste.reason.name,
-          });
-          stats['redirected'] = (stats['redirected'] ?? 0) + 1;
-          count++;
-        }
-      }
-
-      for (final doc in requestSnap.docs) {
-        final r = FoodRequest.fromFirestore(doc.id, doc.data());
-        if (AutoStatusEngine.shouldAutoCancel(r)) {
-          batch.update(doc.reference, {'status': 'cancelled'});
-          stats['cancelled'] = (stats['cancelled'] ?? 0) + 1;
-          count++;
-        }
-      }
-
-      if (count > 0) await batch.commit();
-    } catch (e) {
-      debugPrint('[FS] AI Sweep failed: $e');
-    }
-    return stats;
   }
 
   // ── Fetch available volunteers for admin force-assign ──────────────
@@ -782,6 +724,67 @@ class FirebaseService {
   }
 
   Future<List<AppNotification>> getNotifications() async => sampleNotifications;
+
+  // ═══════════════════════════════════════════════════════════════════
+  // AI MAINTENANCE SWEEP
+  // ═══════════════════════════════════════════════════════════════════
+
+  Future<Map<String, int>> runAutoMaintenanceSweep() async {
+    final stats = {'expired': 0, 'redirected': 0, 'cancelled': 0};
+    try {
+      final surplusSnap = await _db.collection('surplus_food').where('status', isEqualTo: 'available').get();
+      final requestSnap = await _db.collection('requests').where('status', isEqualTo: 'pending').get();
+
+      final batch = _db.batch();
+      int count = 0;
+
+      // 1. Process Surplus Food
+      for (final doc in surplusSnap.docs) {
+        final s = SurplusFood.fromFirestore(doc.id, doc.data());
+        
+        // Auto-expire
+        if (AutoStatusEngine.shouldAutoExpire(s)) {
+          batch.update(doc.reference, {'status': 'expired'});
+          stats['expired'] = (stats['expired'] ?? 0) + 1;
+          count++;
+        }
+        
+        // AI Waste Redirect
+        final waste = WasteEngine.evaluate(
+          surplusId: s.id, foodType: s.foodType, expiryStatus: s.expiryStatus,
+          quantity: s.quantity, timestamp: s.timestamp, nearbyRequestCount: 0, // Simplified
+        );
+        if (waste != null) {
+          batch.update(doc.reference, {
+            'status': 'redirected',
+            'autoRedirect': true,
+            'wasteType': waste.destination,
+            'wasteReason': waste.reason.name,
+          });
+          stats['redirected'] = (stats['redirected'] ?? 0) + 1;
+          count++;
+        }
+      }
+
+      // 2. Process Requests
+      for (final doc in requestSnap.docs) {
+        final r = FoodRequest.fromFirestore(doc.id, doc.data());
+        if (AutoStatusEngine.shouldAutoCancel(r)) {
+          batch.update(doc.reference, {'status': 'cancelled'});
+          stats['cancelled'] = (stats['cancelled'] ?? 0) + 1;
+          count++;
+        }
+      }
+
+      if (count > 0) {
+        await batch.commit();
+        debugPrint('[FS] AI Sweep completed: $count updates.');
+      }
+    } catch (e) {
+      debugPrint('[FS] AI Sweep failed: $e');
+    }
+    return stats;
+  }
 }
 
 class SearchResult {
