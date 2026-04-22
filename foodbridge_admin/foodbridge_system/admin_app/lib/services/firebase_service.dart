@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/models.dart';
+import 'ai_engine.dart';
 
 class FirebaseService {
   static final FirebaseService _i = FirebaseService._();
@@ -43,20 +44,6 @@ class FirebaseService {
   // SMART VOLUNTEER MATCHING
   // ═══════════════════════════════════════════════════════════════════
 
-  /// Haversine distance between two lat/lng points in km.
-  static double _haversine(double lat1, double lng1, double lat2, double lng2) {
-    const r = 6371.0;
-    final dLat = _deg2rad(lat2 - lat1);
-    final dLng = _deg2rad(lng2 - lng1);
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_deg2rad(lat1)) * math.cos(_deg2rad(lat2)) *
-            math.sin(dLng / 2) * math.sin(dLng / 2);
-    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-    return r * c;
-  }
-
-  static double _deg2rad(double deg) => deg * (math.pi / 180);
-
   /// Find the best available volunteer for a food location.
   /// Returns null if no volunteers found.
   Future<MatchResult?> findBestVolunteer({
@@ -72,24 +59,15 @@ class FirebaseService {
 
       if (snap.docs.isEmpty) return null;
 
-      MatchResult? best;
-      for (final doc in snap.docs) {
-        final d    = doc.data();
-        final lat  = (d['lat'] as num?)?.toDouble()  ?? 12.9716;
-        final lng  = (d['lng'] as num?)?.toDouble()  ?? 77.5946;
-        final dist = _haversine(foodLat, foodLng, lat, lng);
-        final score = dist; // simple: nearest = best
+      final volunteers = snap.docs
+          .map((d) => AppUser.fromMap(d.id, d.data()))
+          .toList();
 
-        if (best == null || score < best.score) {
-          best = MatchResult(
-            volunteerId:   doc.id,
-            volunteerName: d['name'] as String? ?? 'Volunteer',
-            distanceKm:    double.parse(dist.toStringAsFixed(1)),
-            score:         score,
-          );
-        }
-      }
-      return best;
+      return MatchEngine.findBest(
+        foodLat: foodLat,
+        foodLng: foodLng,
+        volunteers: volunteers,
+      );
     } catch (e) {
       debugPrint('[FS] findBestVolunteer: $e');
       return null;
@@ -649,7 +627,7 @@ class FirebaseService {
       )).toList()
         ..sort((a, b) => b.tasksCompleted.compareTo(a.tasksCompleted));
 
-      return AdminStats(
+      final stats = AdminStats(
         totalReports:        surplus.length,
         activeRequests:      activeReqs,
         completedDeliveries: completedDocs.length,
@@ -664,6 +642,11 @@ class FirebaseService {
         totalBiogas:         biogas,
         totalFarmer:         farmer,
         totalDiscarded:      disc,
+      );
+
+      // AI: Generate live insights
+      return stats.copyWith(
+        aiInsights: InsightEngine.generate(stats),
       );
     }
 
@@ -680,6 +663,55 @@ class FirebaseService {
       },
     );
     return ctrl.stream;
+  }
+
+  // ── AI Maintenance Sweep ──────────────────────────────────────────
+  Future<Map<String, int>> runAutoMaintenanceSweep() async {
+    final stats = {'expired': 0, 'redirected': 0, 'cancelled': 0};
+    try {
+      final surplusSnap = await _db.collection('surplus_food').where('status', isEqualTo: 'available').get();
+      final requestSnap = await _db.collection('requests').where('status', isEqualTo: 'pending').get();
+
+      final batch = _db.batch();
+      int count = 0;
+
+      for (final doc in surplusSnap.docs) {
+        final s = SurplusFood.fromFirestore(doc.id, doc.data());
+        if (AutoStatusEngine.shouldAutoExpire(s)) {
+          batch.update(doc.reference, {'status': 'expired'});
+          stats['expired'] = (stats['expired'] ?? 0) + 1;
+          count++;
+        }
+        final waste = WasteEngine.evaluate(
+          surplusId: s.id, foodType: s.foodType, expiryStatus: s.expiryStatus,
+          quantity: s.quantity, timestamp: s.timestamp, nearbyRequestCount: 0,
+        );
+        if (waste != null) {
+          batch.update(doc.reference, {
+            'status': 'redirected',
+            'autoRedirect': true,
+            'wasteType': waste.destination,
+            'wasteReason': waste.reason.name,
+          });
+          stats['redirected'] = (stats['redirected'] ?? 0) + 1;
+          count++;
+        }
+      }
+
+      for (final doc in requestSnap.docs) {
+        final r = FoodRequest.fromFirestore(doc.id, doc.data());
+        if (AutoStatusEngine.shouldAutoCancel(r)) {
+          batch.update(doc.reference, {'status': 'cancelled'});
+          stats['cancelled'] = (stats['cancelled'] ?? 0) + 1;
+          count++;
+        }
+      }
+
+      if (count > 0) await batch.commit();
+    } catch (e) {
+      debugPrint('[FS] AI Sweep failed: $e');
+    }
+    return stats;
   }
 
   // ── Fetch available volunteers for admin force-assign ──────────────

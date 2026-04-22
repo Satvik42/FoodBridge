@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/models.dart';
+import 'ai_engine.dart';
 
 class FirebaseService {
   static final FirebaseService _i = FirebaseService._();
@@ -43,20 +44,6 @@ class FirebaseService {
   // SMART VOLUNTEER MATCHING
   // ═══════════════════════════════════════════════════════════════════
 
-  /// Haversine distance between two lat/lng points in km.
-  static double _haversine(double lat1, double lng1, double lat2, double lng2) {
-    const r = 6371.0;
-    final dLat = _deg2rad(lat2 - lat1);
-    final dLng = _deg2rad(lng2 - lng1);
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_deg2rad(lat1)) * math.cos(_deg2rad(lat2)) *
-            math.sin(dLng / 2) * math.sin(dLng / 2);
-    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-    return r * c;
-  }
-
-  static double _deg2rad(double deg) => deg * (math.pi / 180);
-
   /// Find the best available volunteer for a food location.
   /// Returns null if no volunteers found.
   Future<MatchResult?> findBestVolunteer({
@@ -72,24 +59,15 @@ class FirebaseService {
 
       if (snap.docs.isEmpty) return null;
 
-      MatchResult? best;
-      for (final doc in snap.docs) {
-        final d    = doc.data();
-        final lat  = (d['lat'] as num?)?.toDouble()  ?? 12.9716;
-        final lng  = (d['lng'] as num?)?.toDouble()  ?? 77.5946;
-        final dist = _haversine(foodLat, foodLng, lat, lng);
-        final score = dist; // simple: nearest = best
+      final volunteers = snap.docs
+          .map((d) => AppUser.fromMap(d.id, d.data()))
+          .toList();
 
-        if (best == null || score < best.score) {
-          best = MatchResult(
-            volunteerId:   doc.id,
-            volunteerName: d['name'] as String? ?? 'Volunteer',
-            distanceKm:    double.parse(dist.toStringAsFixed(1)),
-            score:         score,
-          );
-        }
-      }
-      return best;
+      return MatchEngine.findBest(
+        foodLat: foodLat,
+        foodLng: foodLng,
+        volunteers: volunteers,
+      );
     } catch (e) {
       debugPrint('[FS] findBestVolunteer: $e');
       return null;

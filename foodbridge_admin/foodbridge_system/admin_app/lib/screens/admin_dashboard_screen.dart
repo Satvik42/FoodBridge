@@ -8,12 +8,19 @@ import '../services/firebase_service.dart';
 import '../services/app_state.dart';
 import '../widgets/admin_widgets.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
+class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
 
   @override
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  bool _sweeping = false;
+  final FirebaseService _svc = FirebaseService();
+
+  @override
   Widget build(BuildContext context) {
-    final svc = FirebaseService();
     return Scaffold(
       backgroundColor: AdminColors.bg,
       body: CustomScrollView(
@@ -139,6 +146,12 @@ class AdminDashboardScreen extends StatelessWidget {
                       totalRedirected: s.totalBiogas + s.totalFarmer,
                     ),
 
+                    // AI: Live Insights Row
+                    if (s.aiInsights.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      _AiInsightsRow(insights: s.aiInsights),
+                    ],
+
                     // ── Requests by area ─────────────────────────────
                     if (s.requestsByArea.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -221,6 +234,17 @@ class AdminDashboardScreen extends StatelessWidget {
         ),
       ]),
       actions: [
+        _sweeping
+            ? const SizedBox(
+                width: 20, height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white70),
+              )
+            : IconButton(
+                icon: const Icon(Icons.auto_fix_high_outlined, color: Colors.white70, size: 20),
+                tooltip: 'Run AI Maintenance Sweep',
+                onPressed: () => _runSweep(context, _svc),
+              ),
+        const SizedBox(width: 8),
         Container(
           margin: const EdgeInsets.only(right: 4),
           child: Row(children: [
@@ -243,6 +267,56 @@ class AdminDashboardScreen extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  Future<void> _runSweep(BuildContext ctx, FirebaseService svc) async {
+    setState(() => _sweeping = true);
+    final res = await svc.runAutoMaintenanceSweep();
+    setState(() => _sweeping = false);
+    if (!ctx.mounted) return;
+    final msg = 'Sweep complete: ${res['expired']} expired, ${res['redirected']} redirected, ${res['cancelled']} cancelled.';
+    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+      content: Text(msg, style: GoogleFonts.dmSans(fontSize: 13)),
+      backgroundColor: AdminColors.accent, behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+}
+
+class _AiInsightsRow extends StatelessWidget {
+  final List<AiInsight> insights;
+  const _AiInsightsRow({required this.insights});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 90,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: insights.length,
+        itemBuilder: (_, i) {
+          final ins = insights[i];
+          return Container(
+            width: 200,
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: ins.severity == InsightSeverity.critical ? const Color(0xFFFAECE7) : AdminColors.cardBg,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: ins.severity == InsightSeverity.critical ? AdminColors.coral : AdminColors.border,
+                width: 1,
+              ),
+            ),
+            child: Row(children: [
+              Icon(ins.icon, size: 20, color: ins.severity == InsightSeverity.critical ? AdminColors.coral : AdminColors.accent),
+              const SizedBox(width: 10),
+              Expanded(child: Text(ins.message, style: GoogleFonts.dmSans(fontSize: 11, fontWeight: FontWeight.w600, color: AdminColors.textPrimary), maxLines: 3)),
+            ]),
+          );
+        },
+      ),
     );
   }
 }

@@ -444,7 +444,6 @@ class _TaskCardState extends State<_TaskCard> {
                     fontSize: 12, color: AppColors.textMuted)),
               ],
             )),
-            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               // Priority badge
               StatusBadge(
                 label: priority.label,
@@ -452,7 +451,8 @@ class _TaskCardState extends State<_TaskCard> {
                 bg: priority.bg,
               ),
               const SizedBox(height: 4),
-              Text('${_ageMinutes(req.timestamp)} ago',
+              // Time age
+              Text(_ageMinutes(req.timestamp),
                   style: GoogleFonts.dmSans(
                       fontSize: 10, color: AppColors.textMuted)),
             ]),
@@ -460,16 +460,29 @@ class _TaskCardState extends State<_TaskCard> {
 
           if (isSuggested) ...[
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: AppColors.primaryL,
-                borderRadius: BorderRadius.circular(6),
+            Row(children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryL,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text('⭐ Best Match',
+                    style: GoogleFonts.dmSans(
+                        fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primary)),
               ),
-              child: Text('Smart Match — closest volunteer to this location',
-                  style: GoogleFonts.dmSans(
-                      fontSize: 11, color: AppColors.primary)),
-            ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text('Confidence: 95%',
+                    style: GoogleFonts.dmSans(
+                        fontSize: 11, color: AppColors.primary)),
+              ),
+            ]),
           ],
 
           const SizedBox(height: 14),
@@ -639,9 +652,10 @@ class _TaskCardState extends State<_TaskCard> {
 
   String _ageMinutes(DateTime dt) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 1) return 'just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m';
-    return '${diff.inHours}h';
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
   }
 
   Widget _routeRow(IconData icon, String label, String value,

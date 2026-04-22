@@ -118,7 +118,7 @@ class _WasteItemCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                food.suggestedAction?.toUpperCase() ?? 'DISCARD',
+                food.autoRoute.name.toUpperCase(),
                 style: GoogleFonts.syne(
                     fontSize: 10, fontWeight: FontWeight.w800, color: AdminColors.blue),
               ),
