@@ -140,7 +140,7 @@ class _AdminShellState extends State<AdminShell> {
   static const _items = [
     _NavItem(icon: Icons.dashboard_outlined,   active: Icons.dashboard,      label: 'Dashboard'),
     _NavItem(icon: Icons.inventory_2_outlined, active: Icons.inventory_2,    label: 'Surplus'),
-    _NavItem(icon: Icons.pending_outlined,     active: Icons.pending,        label: 'Requests'),
+    _NavItem(icon: Icons.pending_outlined,     active: Icons.pending,        label: 'Monitor'),
     _NavItem(icon: Icons.recycling_outlined,   active: Icons.recycling,      label: 'Waste'),
     _NavItem(icon: Icons.flag_outlined,        active: Icons.flag,           label: 'Reports',
         isAlert: true),

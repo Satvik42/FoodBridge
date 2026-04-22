@@ -290,6 +290,7 @@ class FoodRequest {
   final String? acceptedBy,volunteerName,suggestedVolunteerId,assignedVolunteerId,matchedFoodId;
   final DateTime? acceptedTime,completedTime;
   final bool adminOverride;
+  final int matchConfidence;
   final double lat,lng;
 
   const FoodRequest({
@@ -300,6 +301,7 @@ class FoodRequest {
     this.acceptedBy,this.volunteerName,this.suggestedVolunteerId,
     this.assignedVolunteerId,this.matchedFoodId,
     this.acceptedTime,this.completedTime,
+    this.matchConfidence=0,
     this.adminOverride=false,this.lat=12.9716,this.lng=77.5946,this.locationArea='',
   });
 
@@ -319,6 +321,7 @@ class FoodRequest {
       matchedFoodId:d['matchedFoodId']as String?,
       acceptedTime:d['acceptedTime']!=null?ts(d['acceptedTime']):null,
       completedTime:d['completedTime']!=null?ts(d['completedTime']):null,
+      matchConfidence:d['matchConfidence']as int? ??0,
       adminOverride:d['adminOverride']as bool? ??false,
       lat:(d['lat']as num?)?.toDouble()??12.9716,lng:(d['lng']as num?)?.toDouble()??77.5946,
       locationArea:d['locationArea']as String? ??'',
@@ -337,6 +340,7 @@ class FoodRequest {
     if(matchedFoodId!=null)'matchedFoodId':matchedFoodId,
     if(acceptedTime!=null)'acceptedTime':acceptedTime!.toIso8601String(),
     if(completedTime!=null)'completedTime':completedTime!.toIso8601String(),
+    if(matchConfidence>0)'matchConfidence':matchConfidence,
     if(adminOverride)'adminOverride':true,
     'lat':lat,'lng':lng,'locationArea':locationArea,
   };

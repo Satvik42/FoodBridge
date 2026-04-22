@@ -1,4 +1,4 @@
-// firebase_service.dart — FoodBridge Smart System
+// firebase_service.dart â€” FoodBridge Smart System
 // Features: smart volunteer matching, priority sorting, delivery time tracking,
 //           real-time analytics, map intelligence, clean camelCase fields.
 
@@ -40,9 +40,9 @@ class FirebaseService {
   String get currentUserId   => _uid;
   String get currentUserName => _name;
 
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // SMART VOLUNTEER MATCHING
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   /// Find the best available volunteer for a food location.
   /// Returns null if no volunteers found.
@@ -74,13 +74,6 @@ class FirebaseService {
     }
   }
 
-  /// Mark volunteer as unavailable (when they accept a task).
-  Future<void> _setVolunteerAvailability(String volunteerId, bool available) async {
-    await _db.collection('users').doc(volunteerId).update({
-      'isAvailable': available,
-    });
-  }
-
   // ═══════════════════════════════════════════════════════════════════
   // LISTINGS — priority-sorted real-time stream
   // ═══════════════════════════════════════════════════════════════════
@@ -107,9 +100,9 @@ class FirebaseService {
         });
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // MAP INTELLIGENCE — supply + demand heat data
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // MAP INTELLIGENCE â€” supply + demand heat data
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   /// Returns all available surplus food for map display.
   Stream<List<SurplusFood>> mapSupplyStream() {
@@ -135,9 +128,9 @@ class FirebaseService {
             .toList());
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // SURPLUS FOOD — with priority auto-calc + volunteer matching
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // SURPLUS FOOD â€” with priority auto-calc + volunteer matching
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Future<SurplusFood> reportSurplusFood({
     required String foodType,
@@ -149,7 +142,7 @@ class FirebaseService {
     DateTime? expiryTime,
     double lat = 12.9716,
     double lng = 77.5946,
-    String imageEmoji = '🍱',
+    String imageEmoji = 'ðŸ±',
   }) async {
     final now      = DateTime.now();
     final docRef   = _db.collection('surplus_food').doc();
@@ -193,9 +186,9 @@ class FirebaseService {
         });
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // REQUESTS — with priority, volunteer matching, location area
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // REQUESTS â€” with priority, volunteer matching, location area
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Future<FoodRequest> createRequest({
     required String foodId,
@@ -226,6 +219,7 @@ class FirebaseService {
       quantity: quantity, status: RequestStatus.pending,
       timestamp: now, priority: priority,
       suggestedVolunteerId: match?.volunteerId,
+      matchConfidence: match?.confidence ?? 0,
       lat: lat, lng: lng, locationArea: area,
     );
 
@@ -249,7 +243,7 @@ class FirebaseService {
     );
   }
 
-  // ── User: own requests, priority-sorted ────────────────────────────
+  // â”€â”€ User: own requests, priority-sorted â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Stream<List<FoodRequest>> userRequestsStream() {
     return _db
         .collection('requests')
@@ -273,7 +267,7 @@ class FirebaseService {
         });
   }
 
-  // ── Volunteer: active tasks (pending + own accepted) ───────────────
+  // â”€â”€ Volunteer: active tasks (pending + own accepted) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Suggested tasks for this volunteer are sorted to top.
   Stream<List<FoodRequest>> activeTasksStream() {
     final pendingS = _db
@@ -328,7 +322,7 @@ class FirebaseService {
     return ctrl.stream;
   }
 
-  // ── Volunteer: completed tasks ─────────────────────────────────────
+  // â”€â”€ Volunteer: completed tasks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Stream<List<FoodRequest>> completedRequestsStream() {
     return _db
         .collection('requests')
@@ -349,7 +343,7 @@ class FirebaseService {
         });
   }
 
-  // ── Admin: ALL requests ────────────────────────────────────────────
+  // â”€â”€ Admin: ALL requests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Stream<List<FoodRequest>> allRequestsStream() {
     return _db
         .collection('requests')
@@ -380,32 +374,39 @@ class FirebaseService {
             .toList());
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // ACCEPT / COMPLETE — with delivery time tracking + availability
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // ACCEPT / COMPLETE â€” with delivery time tracking + availability
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   /// Atomic accept with delivery time tracking.
   /// Marks volunteer as unavailable to prevent double-booking.
   Future<void> acceptTask(String requestId) async {
     final ref = _db.collection('requests').doc(requestId);
-    await _db.runTransaction((txn) async {
-      final snap = await txn.get(ref);
-      if (!snap.exists) throw Exception('Request not found.');
-      final current = snap.data()?['status'] as String? ?? '';
-      if (current != 'pending') throw Exception('Task already accepted by someone else.');
-      txn.update(ref, {
-        'status':        'accepted',
-        'acceptedBy':    _uid,
-        'volunteerName': _name,
-        'acceptedTime':  FieldValue.serverTimestamp(), // NEW: delivery tracking
+    try {
+      await _db.runTransaction((txn) async {
+        final snap = await txn.get(ref);
+        if (!snap.exists) throw Exception('Request not found (ID: $requestId).');
+        final current = snap.data()?['status'] as String? ?? '';
+        if (current != 'pending') {
+           throw Exception('Task status is "$current" but must be "pending" to accept.');
+        }
+        txn.update(ref, {
+          'status':        'accepted',
+          'acceptedBy':    _uid,
+          'volunteerName': _name,
+          'acceptedTime':  FieldValue.serverTimestamp(),
+        });
       });
-    });
+    } catch (e) {
+      debugPrint('[FS] acceptTask failed: $e');
+      rethrow;
+    }
     // Mark volunteer unavailable
     await _setVolunteerAvailability(_uid, false)
         .catchError((e) => debugPrint('[FS] setAvailability: $e'));
   }
 
-  /// Complete task — records completedTime for delivery duration calc.
+  /// Complete task â€” records completedTime for delivery duration calc.
   Future<void> completeTask(String requestId) async {
     await _db.collection('requests').doc(requestId).update({
       'status':        'completed',
@@ -416,9 +417,9 @@ class FirebaseService {
         .catchError((e) => debugPrint('[FS] setAvailability: $e'));
   }
 
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // ADMIN CONTROLS
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Future<void> markSurplusExpired(String surplusId) async {
     final snap = await _db.collection('surplus_food').doc(surplusId).get();
@@ -500,9 +501,9 @@ class FirebaseService {
   Future<void> deleteUserReport(String reportId) async =>
       _db.collection('user_reports').doc(reportId).delete();
 
-  // ═══════════════════════════════════════════════════════════════════
-  // REAL-TIME ADMIN ANALYTICS — upgraded with all new metrics
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // REAL-TIME ADMIN ANALYTICS â€” upgraded with all new metrics
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Stream<AdminStats> adminStatsStream() {
     final surplusS  = _db.collection('surplus_food').snapshots();
@@ -667,7 +668,7 @@ class FirebaseService {
     return ctrl.stream;
   }
 
-  // ── Fetch available volunteers for admin force-assign ──────────────
+  // â”€â”€ Fetch available volunteers for admin force-assign â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<List<AppUser>> getAvailableVolunteers() async {
     final snap = await _db
         .collection('users')
@@ -678,9 +679,9 @@ class FirebaseService {
         .toList();
   }
 
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // USER REPORTS
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Future<void> submitReport({
     required ReportType reportType,
@@ -701,9 +702,9 @@ class FirebaseService {
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // SEARCH
-  // ═══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Future<SearchResult> search(String query) async {
     final q = query.toLowerCase().trim();
@@ -735,6 +736,15 @@ class FirebaseService {
   }
 
   Future<List<AppNotification>> getNotifications() async => sampleNotifications;
+
+  Future<void> _setVolunteerAvailability(String uid, bool isAvailable) async {
+    if (uid.isEmpty) return;
+    try {
+      await _db.collection('users').doc(uid).update({'isAvailable': isAvailable});
+    } catch (e) {
+      debugPrint('[FS] _setVolunteerAvailability error: $e');
+    }
+  }
 }
 
 class SearchResult {

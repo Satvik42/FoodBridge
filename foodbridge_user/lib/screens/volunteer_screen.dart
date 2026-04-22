@@ -257,33 +257,12 @@ class _AvailableTasksTab extends StatelessWidget {
             child: _TaskCard(
               request: requests[i],
               isSuggestedForMe: requests[i].suggestedVolunteerId == currentUid,
-              onAccept: () => _handleAccept(context, requests[i]),
+              onAccept: () {},
             ),
           ),
         );
       },
     );
-  }
-
-  Future<void> _handleAccept(BuildContext ctx, FoodRequest req) async {
-    try {
-      await svc.acceptTask(req.id);
-      if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text('Task accepted! Head to ${req.location}',
-            style: GoogleFonts.dmSans(fontSize: 13)),
-        backgroundColor: AppColors.primary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ));
-    } catch (e) {
-      if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text('Error: $e', style: GoogleFonts.dmSans(fontSize: 13)),
-        backgroundColor: AppColors.coral,
-        behavior: SnackBarBehavior.floating,
-      ));
-    }
   }
 }
 
@@ -444,6 +423,7 @@ class _TaskCardState extends State<_TaskCard> {
                     fontSize: 12, color: AppColors.textMuted)),
               ],
             )),
+            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               // Priority badge
               StatusBadge(
                 label: priority.label,
@@ -458,30 +438,40 @@ class _TaskCardState extends State<_TaskCard> {
             ]),
           ]),
 
-          if (isSuggested) ...[
+          if (isSuggested || req.matchConfidence > 0) ...[
             const SizedBox(height: 8),
             Row(children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryL,
-                  borderRadius: BorderRadius.circular(6),
+              if (isSuggested)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.stars, size: 14, color: Color(0xFF2E7D32)),
+                      const SizedBox(width: 4),
+                      Text('Best Match', style: GoogleFonts.dmSans(
+                        fontSize: 11, fontWeight: FontWeight.bold,
+                        color: const Color(0xFF2E7D32))),
+                    ],
+                  ),
                 ),
-                child: Text('⭐ Best Match',
+              if (req.matchConfidence > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3F2FD),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text('AI Confidence: ${req.matchConfidence}%', 
                     style: GoogleFonts.dmSans(
-                        fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primary)),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(6),
+                      fontSize: 11, fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1565C0))),
                 ),
-                child: Text('Confidence: 95%',
-                    style: GoogleFonts.dmSans(
-                        fontSize: 11, color: AppColors.primary)),
-              ),
             ]),
           ],
 
@@ -501,76 +491,75 @@ class _TaskCardState extends State<_TaskCard> {
           const SizedBox(height: 14),
 
           // Action buttons
-          _accepted
-              ? Row(children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.map_outlined, size: 16),
-                      label: const Text('Navigate'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.primary),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _completing ? null : _handleComplete,
-                      icon: _completing
-                          ? const SizedBox(width: 14, height: 14,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white))
-                          : const Icon(Icons.task_alt_outlined, size: 16),
-                      label: Text(_completing ? 'Saving…' : 'Mark Done'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary2,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-                  ),
-                ]),
-              if (_accepted) ...[
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () => _handleMarkExpired(context),
-                    icon: const Icon(Icons.warning_amber_rounded, size: 16),
-                    label: const Text('Report as Expired / Spoiled'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.coral,
-                      side: const BorderSide(color: AppColors.coral),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
+          if (_accepted) ...[
+            Row(children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.map_outlined, size: 16),
+                  label: const Text('Navigate'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.primary),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
-              ],
-              if (!_accepted)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _accepting ? null : _handleAccept,
-                    icon: _accepting
-                        ? const SizedBox(width: 14, height: 14,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white))
-                        : const Icon(Icons.check_circle_outline, size: 16),
-                    label: Text(_accepting ? 'Accepting…' : 'Accept Task'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _completing ? null : _handleComplete,
+                  icon: _completing
+                      ? const SizedBox(width: 14, height: 14,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
+                      : const Icon(Icons.task_alt_outlined, size: 16),
+                  label: Text(_completing ? 'Saving…' : 'Mark Done'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary2,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
+              ),
+            ]),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _handleMarkExpired(context),
+                icon: const Icon(Icons.warning_amber_rounded, size: 16),
+                label: const Text('Report as Expired / Spoiled'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.coral,
+                  side: const BorderSide(color: AppColors.coral),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ] else ...[
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _accepting ? null : _handleAccept,
+                icon: _accepting
+                    ? const SizedBox(width: 14, height: 14,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.check_circle_outline, size: 16),
+                label: Text(_accepting ? 'Accepting…' : 'Accept Task'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -582,6 +571,15 @@ class _TaskCardState extends State<_TaskCard> {
       await _svc.acceptTask(widget.request.id);
       if (!mounted) return;
       setState(() { _accepting = false; _accepted = true; });
+      
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Task accepted! Head to ${widget.request.location}',
+            style: GoogleFonts.dmSans(fontSize: 13)),
+        backgroundColor: AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ));
+
       widget.onAccept();
     } catch (e) {
       if (!mounted) return;

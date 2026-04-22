@@ -30,7 +30,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           // ── Real-time stats ──────────────────────────────────────────
           SliverToBoxAdapter(
             child: StreamBuilder<AdminStats>(
-              stream: svc.adminStatsStream(),
+              stream: _svc.adminStatsStream(),
               builder: (_, snap) {
                 final s = snap.data ?? const AdminStats();
                 return Padding(
@@ -179,7 +179,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
           SliverToBoxAdapter(
             child: StreamBuilder<List<FoodRequest>>(
-              stream: svc.allRequestsStream(),
+              stream: _svc.allRequestsStream(),
               builder: (_, snap) {
                 if (!snap.hasData) return const Padding(
                   padding: EdgeInsets.all(16),
@@ -548,6 +548,17 @@ class _ActivityTile extends StatelessWidget {
               Text('Volunteer: ${request.volunteerName}',
                   style: GoogleFonts.dmSans(
                       fontSize: 11, color: AdminColors.blue)),
+            if (request.matchConfidence > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Row(children: [
+                  const Icon(Icons.auto_awesome, size: 10, color: AdminColors.accent),
+                  const SizedBox(width: 4),
+                  Text('AI Match: ${request.matchConfidence}%',
+                      style: GoogleFonts.syne(
+                          fontSize: 10, fontWeight: FontWeight.w700, color: AdminColors.accent)),
+                ]),
+              ),
           ],
         )),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
