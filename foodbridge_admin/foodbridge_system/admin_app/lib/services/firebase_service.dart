@@ -497,8 +497,16 @@ class FirebaseService {
     QuerySnapshot<Map<String, dynamic>>? latestUsers;
 
     late StreamController<AdminStats> ctrl;
+    DateTime? lastSweep;
 
     AdminStats compute() {
+      // Periodic auto-sweep logic (manual-free automation)
+      final now = DateTime.now();
+      if (lastSweep == null || now.difference(lastSweep!).inMinutes >= 2) {
+        lastSweep = now;
+        Future.delayed(const Duration(seconds: 1), () => runAutoMaintenanceSweep());
+      }
+
       final surplus   = latestSurplus?.docs  ?? [];
       final requests  = latestRequests?.docs ?? [];
       final reports   = latestReports?.docs  ?? [];
@@ -611,6 +619,17 @@ class FirebaseService {
       )).toList()
         ..sort((a, b) => b.tasksCompleted.compareTo(a.tasksCompleted));
 
+      // Waste redirected (Filter out incorrect fresh-to-biogas redirects)
+      final wasteRedirectedCount = surplus
+          .where((d) {
+            final data = d.data();
+            final isRedirected = data['status'] == 'redirected';
+            final isIncorrectFresh = (data['expiryStatus'] as String? ?? '').toLowerCase() == 'fresh' && 
+                                     data['wasteType'] == 'biogas';
+            return isRedirected && !isIncorrectFresh;
+          })
+          .length;
+
       // Generate AI Insights using the engine
       final insights = InsightEngine.generate(AdminStats(
         totalReports:        surplus.length,
@@ -620,7 +639,7 @@ class FirebaseService {
         expiredItems:        expiredItems,
         pendingUserReports:  pendingReports,
         avgDeliveryMinutes:  avgDelivery,
-        wasteRedirectedCount: expiredItems, // Proxy for now
+        wasteRedirectedCount: wasteRedirectedCount,
         foodSavedCount:      completedDocs.length, // Proxy for now
         requestsByArea:      byArea,
       ));
@@ -633,6 +652,8 @@ class FirebaseService {
         expiredItems:        expiredItems,
         pendingUserReports:  pendingReports,
         avgDeliveryMinutes:  double.parse(avgDelivery.toStringAsFixed(1)),
+        wasteRedirectedCount: wasteRedirectedCount,
+        foodSavedCount:      completedDocs.length,
         autoAssignedCount:   autoCount,
         manualAssignedCount: manualCount.clamp(0, 999999),
         requestsByArea:      byArea,
@@ -665,6 +686,38 @@ class FirebaseService {
     return snap.docs
         .map((d) => AppUser.fromMap(d.id, d.data()))
         .toList();
+  }
+
+  Future<void> reportManualWaste({
+    required String foodCategory,
+    required String expiryStatus,
+    required String quantity,
+    required String location,
+    required String destination,
+  }) async {
+    final now = DateTime.now();
+    final docRef = _db.collection('surplus_food').doc();
+    
+    // Determine waste type string based on the selected destination
+    final isBiogas = destination.toLowerCase().contains('biogas');
+    final wasteType = isBiogas ? 'biogas' : 'feed';
+
+    await docRef.set({
+      'id': docRef.id,
+      'createdBy': _uid,
+      'createdByName': _name,
+      'foodType': foodCategory,
+      'description': 'Manual Waste Report',
+      'quantity': quantity,
+      'location': location,
+      'expiryStatus': expiryStatus,
+      'timestamp': FieldValue.serverTimestamp(),
+      'status': 'redirected', // Automatically redirected
+      'autoRedirect': false, // Because it was a manual report
+      'wasteType': wasteType,
+      'wasteReason': 'Manual Report via Waste-to-Resource UI',
+      'priority': 0, // Not relevant for active tasks
+    });
   }
 
   // ═══════════════════════════════════════════════════════════════════

@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'theme.dart';
 import 'services/app_state.dart';
@@ -23,7 +22,6 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
 
   // ── Firebase initialization ────────────────────────────────────────
   // Step 1: Run `flutterfire configure` to generate firebase_options.dart
