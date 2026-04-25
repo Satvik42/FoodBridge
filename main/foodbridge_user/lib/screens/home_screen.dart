@@ -5,6 +5,7 @@ import '../theme.dart';
 import '../models/models.dart';
 import '../services/firebase_service.dart';
 import '../services/app_state.dart';
+import '../services/auth_service.dart';
 import '../widgets/common.dart';
 import '../widgets/food_card.dart';
 import 'surplus_food_screen.dart';
@@ -123,10 +124,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ]),
         Padding(
           padding: const EdgeInsets.only(right: 12),
-          child: AvatarCircle(
-            initials: appState.userName.isNotEmpty
-                ? appState.userName[0].toUpperCase() : 'U',
-            bg: const Color(0xFF40916C), fg: Colors.white, size: 32,
+          child: InkWell(
+            onTap: () => _showProfileSheet(context, appState),
+            borderRadius: BorderRadius.circular(16),
+            child: AvatarCircle(
+              initials: appState.userName.isNotEmpty
+                  ? appState.userName[0].toUpperCase() : 'U',
+              bg: const Color(0xFF40916C), fg: Colors.white, size: 32,
+            ),
           ),
         ),
       ],
@@ -340,6 +345,51 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) => _NotificationSheet(notifications: sampleNotifications),
+    );
+  }
+
+  void _showProfileSheet(BuildContext ctx, AppState appState) {
+    showModalBottomSheet(
+      context: ctx, backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (c) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(width: 40, height: 4,
+              decoration: BoxDecoration(color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 24),
+          Row(children: [
+            AvatarCircle(
+                initials: appState.userName.isNotEmpty ? appState.userName[0].toUpperCase() : 'U',
+                bg: AppColors.primary, fg: Colors.white, size: 50),
+            const SizedBox(width: 16),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(appState.userName, style: GoogleFonts.syne(
+                  fontSize: 18, fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary)),
+              Text('User / Donor', style: GoogleFonts.dmSans(
+                  fontSize: 13, color: AppColors.textMuted)),
+            ]),
+          ]),
+          const SizedBox(height: 24),
+          const AppDivider(),
+          const SizedBox(height: 12),
+          ListTile(
+            leading: const Icon(Icons.logout_rounded, color: AppColors.coral),
+            title: Text('Sign Out', style: GoogleFonts.syne(
+                fontSize: 14, fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary)),
+            contentPadding: EdgeInsets.zero,
+            onTap: () async {
+              await AuthService().signOut();
+              appState.clearUser();
+              if (c.mounted) Navigator.pop(c);
+            },
+          ),
+        ]),
+      ),
     );
   }
 }

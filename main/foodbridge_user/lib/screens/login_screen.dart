@@ -273,9 +273,95 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                 ]),
               ),
+              const SizedBox(height: 32),
+              _buildDemoAccountsBox(),
               const SizedBox(height: 40),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDemoAccountsBox() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.05),
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.info_outline, size: 16, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Text('Prototype Access',
+                  style: GoogleFonts.syne(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text('Tap to autofill demo credentials:',
+              style: GoogleFonts.dmSans(
+                  fontSize: 12, color: AppColors.textSecondary)),
+          const SizedBox(height: 12),
+          _demoAccountTile('Admin', 'admin1@foodbridge.com', 'password123'),
+          const SizedBox(height: 8),
+          _demoAccountTile('User 1 (Donor)', 'user1@foodbridge.com', 'password123'),
+          const SizedBox(height: 8),
+          _demoAccountTile('User 2 (Donor)', 'user2@foodbridge.com', 'password123'),
+          const SizedBox(height: 8),
+          _demoAccountTile('User 3 (Donor)', 'user3@foodbridge.com', 'password123'),
+          const SizedBox(height: 8),
+          _demoAccountTile('Volunteer 1', 'volunteer1@foodbridge.com', 'password123'),
+          const SizedBox(height: 8),
+          _demoAccountTile('Volunteer 2', 'volunteer2@foodbridge.com', 'password123'),
+          const SizedBox(height: 8),
+          _demoAccountTile('Volunteer 3', 'volunteer3@foodbridge.com', 'password123'),
+        ],
+      ),
+    );
+  }
+
+  Widget _demoAccountTile(String role, String email, String password) {
+    return InkWell(
+      onTap: () {
+        _tabCtrl.animateTo(0); // Switch to Sign In tab
+        _emailCtrl.text = email;
+        _passwordCtrl.text = password;
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.bg,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(role,
+                      style: GoogleFonts.syne(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary)),
+                  Text(email,
+                      style: GoogleFonts.dmSans(
+                          fontSize: 11, color: AppColors.textMuted)),
+                ],
+              ),
+            ),
+            Icon(Icons.login, size: 16, color: AppColors.primary.withOpacity(0.5)),
+          ],
         ),
       ),
     );

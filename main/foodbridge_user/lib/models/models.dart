@@ -209,7 +209,17 @@ class SurplusFood {
       wasteType:d['wasteType']as String?,wasteReason:wr(d['wasteReason']as String?),
       acceptedBy:d['acceptedBy']as String?,acceptedByName:d['acceptedByName']as String?,
       lat:(d['lat']as num?)?.toDouble()??12.9716,lng:(d['lng']as num?)?.toDouble()??77.5946,
-      imageEmoji:d['imageEmoji']as String? ??'🍱',
+      imageEmoji: () {
+        String raw = d['imageEmoji'] as String? ?? '';
+        if (raw.isEmpty || raw.contains('ð') || raw.contains('?') || raw.codeUnits.length > 5) {
+          final t = (d['foodType'] as String? ?? '').toLowerCase();
+          if (t.contains('maggie') || t.contains('noodle')) return '🍜';
+          if (t.contains('dosa') || t.contains('idly') || t.contains('biryani')) return '🍛';
+          if (t.contains('fries')) return '🍟';
+          return '🍲';
+        }
+        return raw;
+      }(),
     );
   }
 
