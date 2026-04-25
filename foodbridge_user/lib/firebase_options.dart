@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -40,8 +41,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAyppF1F5EMyvuyXGbDTdJwwJ42xM8TIKs',
+  static FirebaseOptions get web => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_WEB']!,
     appId: '1:249295351708:web:73bf8e04542a19a31a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -51,8 +52,8 @@ class DefaultFirebaseOptions {
     measurementId: 'G-QXTHP9XT4L',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDAzzSAVniI1BeL1JJ-dbUbdwtfHTheLzs',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_ANDROID']!,
     appId: '1:249295351708:android:ef8452cb09bdd7571a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -60,8 +61,8 @@ class DefaultFirebaseOptions {
     storageBucket: 'foodbridge-rohan-9cb08.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCCefc5aqjOIhF4eGnn9f2VDq0yxuhK50g',
+  static FirebaseOptions get ios => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_IOS']!,
     appId: '1:249295351708:ios:d763ced67290220f1a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -69,8 +70,8 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.foodbridgeUser',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCCefc5aqjOIhF4eGnn9f2VDq0yxuhK50g',
+  static FirebaseOptions get macos => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_MACOS']!,
     appId: '1:249295351708:ios:d763ced67290220f1a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -78,8 +79,8 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.foodbridgeUser',
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAyppF1F5EMyvuyXGbDTdJwwJ42xM8TIKs',
+  static FirebaseOptions get windows => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_WINDOWS']!,
     appId: '1:249295351708:web:7674608b5c5df6231a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',

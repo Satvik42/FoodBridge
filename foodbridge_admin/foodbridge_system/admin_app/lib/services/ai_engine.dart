@@ -51,17 +51,17 @@ class RoutingEngine {
     // ── Decision tree ──────────────────────────────────────────────
     if (isExpired) {
       return const RouteDecision(
-        route: AutoRoute.feed,
-        confidence: 98,
-        reasoning: 'Food is fully expired — redirected to farmers for organic manure.',
+        route: AutoRoute.biogas,
+        confidence: 95,
+        reasoning: 'Food is expired — redirected to biogas unit.',
       );
     }
 
-    if (isNear && nearbyRequestCount == 0) {
+    if (isNear && nearbyRequestCount == 0 && (minsToExpiry != null && minsToExpiry < 60)) {
       return const RouteDecision(
-        route: AutoRoute.biogas,
-        confidence: 92,
-        reasoning: 'Food near expiry with no active demand — redirected to biogas energy plant.',
+        route: AutoRoute.feed,
+        confidence: 88,
+        reasoning: 'Near expiry, no requests — redirected to animal feed.',
       );
     }
 
@@ -246,35 +246,25 @@ class WasteEngine {
   }) {
     final now        = DateTime.now();
     final ageHours   = now.difference(timestamp).inHours;
+    final qty        = _parseQty(quantity);
     final isExpired  = expiryStatus == 'Expired';
-    final isNear     = expiryStatus == 'Near Expiry';
-    final pastExpiry = expiryTime != null && now.isAfter(expiryTime!);
+    final pastExpiry = expiryTime != null && now.isAfter(expiryTime);
 
-    // Case 1: Explicitly expired -> Farmers (Manure)
+    // Case 1: Explicitly expired
     if (isExpired || pastExpiry) {
       return WasteRedirect(
         foodId: surplusId, foodType: foodType,
-        destination: 'feed', 
+        destination: qty > 20 ? 'biogas' : 'feed',
         reason: WasteReason.expired,
         redirectedAt: now,
       );
     }
 
-    // Case 2: Near Expiry -> Biogas (Trigger after 2 hours if no requests)
-    if (isNear && ageHours >= _noRequestsThresholdHours && nearbyRequestCount == 0) {
+    // Case 2: Sat unclaimed too long
+    if (ageHours >= _noRequestsThresholdHours && nearbyRequestCount == 0) {
       return WasteRedirect(
         foodId: surplusId, foodType: foodType,
-        destination: 'biogas',
-        reason: WasteReason.noRequestsLong,
-        redirectedAt: now,
-      );
-    }
-
-    // Case 3: Fresh Food -> PROTECT (Only redirect if sat unclaimed for > 12 hours)
-    if (expiryStatus == 'Fresh' && ageHours >= 12 && nearbyRequestCount == 0) {
-      return WasteRedirect(
-        foodId: surplusId, foodType: foodType,
-        destination: 'biogas',
+        destination: qty > 15 ? 'biogas' : 'feed',
         reason: WasteReason.noRequestsLong,
         redirectedAt: now,
       );
