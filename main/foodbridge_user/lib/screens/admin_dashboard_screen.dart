@@ -6,8 +6,9 @@ import '../admin_theme.dart';
 import '../models/models.dart';
 import '../services/firebase_service.dart';
 import '../services/app_state.dart';
-import '../services/auth_service.dart';
 import '../widgets/admin_widgets.dart';
+import 'admin_waste_resource_screen.dart';
+
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -110,6 +111,37 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       onSweep: () => _runSweep(context),
                     ),
 
+                    // ── Waste to Resource Nav ───────────────────────────
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminWasteResourceScreen())),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AdminColors.purple.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AdminColors.purple.withOpacity(0.15), width: 0.5),
+                        ),
+                        child: Row(children: [
+                          Container(
+                            width: 36, height: 36,
+                            decoration: BoxDecoration(color: AdminColors.purple.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8)),
+                            child: const Icon(Icons.recycling_outlined, size: 18, color: AdminColors.purple),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text('Waste to Resource Management', style: GoogleFonts.syne(
+                                fontSize: 13, fontWeight: FontWeight.w700, color: AdminColors.textPrimary)),
+                            Text('Divert food waste to compost, biogas, or feed',
+                                style: GoogleFonts.dmSans(fontSize: 11, color: AdminColors.textMuted)),
+                          ])),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.arrow_forward_ios, size: 14, color: AdminColors.textMuted),
+                        ]),
+                      ),
+                    ),
+
                     // ── Requests by area ───────────────────────────────
                     if (s.requestsByArea.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -184,10 +216,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ])),
       IconButton(
         icon: const Icon(Icons.logout_outlined, color: Colors.white70, size: 20),
-        onPressed: () async {
-          await AuthService().signOut();
-          if (context.mounted) context.read<AppState>().clearUser();
-        },
+        onPressed: () => context.read<AppState>().clearUser(),
       ),
     ],
   );
@@ -286,40 +315,37 @@ class _AutoSweepCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AdminColors.navy.withOpacity(0.05),
+        color: AdminColors.accent.withOpacity(0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AdminColors.navy.withOpacity(0.15), width: 0.5),
+        border: Border.all(color: AdminColors.accent.withOpacity(0.2), width: 0.8),
       ),
       child: Row(children: [
         Container(
           width: 36, height: 36,
-          decoration: BoxDecoration(color: AdminColors.navy.withOpacity(0.1),
+          decoration: BoxDecoration(color: AdminColors.accent.withOpacity(0.15),
               borderRadius: BorderRadius.circular(8)),
-          child: const Icon(Icons.memory_outlined, size: 18, color: AdminColors.navy),
+          child: const Icon(Icons.auto_awesome, size: 18, color: AdminColors.accent),
         ),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('AI Maintenance Sweep', style: GoogleFonts.syne(
-              fontSize: 13, fontWeight: FontWeight.w700, color: AdminColors.textPrimary)),
-          Text('Auto-expire stale items, cancel old requests, redirect waste',
+          Row(children: [
+            Text('AI Autonomous Management', style: GoogleFonts.syne(
+                fontSize: 13, fontWeight: FontWeight.w800, color: AdminColors.textPrimary)),
+            const SizedBox(width: 6),
+            const Icon(Icons.check_circle, size: 12, color: AdminColors.accent),
+          ]),
+          Text('Auto-redirecting expired food to Biogas & Farmers in real-time',
               style: GoogleFonts.dmSans(fontSize: 11, color: AdminColors.textMuted)),
         ])),
         const SizedBox(width: 12),
-        GestureDetector(
-          onTap: sweeping ? null : onSweep,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: sweeping ? AdminColors.bg2 : AdminColors.navy,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: sweeping
-                ? const SizedBox(width: 16, height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2,
-                        color: AdminColors.textMuted))
-                : Text('Run Now', style: GoogleFonts.syne(
-                    fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: AdminColors.accent,
+            borderRadius: BorderRadius.circular(20),
           ),
+          child: Text('ACTIVE', style: GoogleFonts.syne(
+              fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.5)),
         ),
       ]),
     );
