@@ -1,0 +1,142 @@
+﻿
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\main.dart:130:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\main.dart:142:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\main.dart:169:53 - deprecated_member_use
+  error - The getter 'coralLight' isn't defined for the type 'AppColors' - lib\models\data.dart:39:26 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\models\data.dart:41:26 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\models\data.dart:43:26 - undefined_getter
+  error - The getter 'blueLight' isn't defined for the type 'AppColors' - lib\models\data.dart:45:26 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\models\data.dart:131:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\models\data.dart:132:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\models\data.dart:133:31 - deprecated_member_use
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\models\data.dart:189:25 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\models\data.dart:190:27 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\models\data.dart:199:25 - undefined_getter
+  error - The getter 'coralLight' isn't defined for the type 'AppColors' - lib\models\data.dart:209:25 - undefined_getter
+  error - The getter 'blueLight' isn't defined for the type 'AppColors' - lib\models\data.dart:219:25 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\models\data.dart:229:25 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\models\data.dart:230:27 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\models\data.dart:239:25 - undefined_getter
+  error - The getter 'coralLight' isn't defined for the type 'AppColors' - lib\models\data.dart:253:25 - undefined_getter
+  error - The getter 'coralLight' isn't defined for the type 'AppColors' - lib\models\data.dart:255:23 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\models\data.dart:264:25 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\models\data.dart:266:23 - undefined_getter
+  error - The getter 'blueLight' isn't defined for the type 'AppColors' - lib\models\data.dart:275:25 - undefined_getter
+  error - The getter 'blueLight' isn't defined for the type 'AppColors' - lib\models\data.dart:277:23 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\models\data.dart:285:28 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\models\data.dart:286:25 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\models\data.dart:288:23 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\models\data.dart:296:28 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\models\data.dart:297:25 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\models\data.dart:299:23 - undefined_getter
+   info - The imported package 'fl_chart' isn't a dependency of the importing package - lib\screens\dashboard_screen.dart:3:8 - depend_on_referenced_packages
+  error - The getter 'blueLight' isn't defined for the type 'AppColors' - lib\screens\dashboard_screen.dart:61:40 - undefined_getter
+  error - The method 'StatCard' isn't defined for the type 'DashboardScreen' - lib\screens\dashboard_screen.dart:89:9 - undefined_method
+  error - The values in a const list literal must be constants - lib\screens\dashboard_screen.dart:89:9 - non_constant_list_element
+  error - The method 'StatCard' isn't defined for the type 'DashboardScreen' - lib\screens\dashboard_screen.dart:96:9 - undefined_method
+  error - The values in a const list literal must be constants - lib\screens\dashboard_screen.dart:96:9 - non_constant_list_element
+  error - The method 'StatCard' isn't defined for the type 'DashboardScreen' - lib\screens\dashboard_screen.dart:103:9 - undefined_method
+  error - The values in a const list literal must be constants - lib\screens\dashboard_screen.dart:103:9 - non_constant_list_element
+  error - The method 'StatCard' isn't defined for the type 'DashboardScreen' - lib\screens\dashboard_screen.dart:110:9 - undefined_method
+  error - The values in a const list literal must be constants - lib\screens\dashboard_screen.dart:110:9 - non_constant_list_element
+  error - The name 'AlertItem' isn't a class - lib\screens\dashboard_screen.dart:167:21 - creation_with_non_type
+  error - The getter 'coralLight' isn't defined for the type 'AppColors' - lib\screens\dashboard_screen.dart:172:31 - undefined_getter
+  error - The name 'AlertItem' isn't a class - lib\screens\dashboard_screen.dart:176:21 - creation_with_non_type
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\screens\dashboard_screen.dart:181:31 - undefined_getter
+  error - The name 'AlertItem' isn't a class - lib\screens\dashboard_screen.dart:185:21 - creation_with_non_type
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\screens\dashboard_screen.dart:190:31 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\dashboard_screen.dart:255:48 - undefined_getter
+  error - The method 'UrgencyBadge' isn't defined for the type '_NeedRow' - lib\screens\dashboard_screen.dart:357:15 - undefined_method
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:79:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:135:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:144:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:150:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:156:55 - deprecated_member_use
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:204:31 - unnecessary_underscores
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:341:40 - deprecated_member_use
+   info - Unnecessary use of multiple underscores - lib\screens\map_screen.dart:89:30 - unnecessary_underscores
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:169:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:171:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:198:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:203:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:211:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:223:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:258:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:261:50 - deprecated_member_use
+   info - Unnecessary use of multiple underscores - lib\screens\map_screen.dart:381:35 - unnecessary_underscores
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:390:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\map_screen.dart:393:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\report_screen.dart:43:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\report_screen.dart:71:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\report_screen.dart:132:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\report_screen.dart:191:62 - deprecated_member_use
+warning - The value of the local variable 'typeLabel' isn't used - lib\screens\report_screen.dart:259:11 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\report_screen.dart:422:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\report_screen.dart:447:35 - deprecated_member_use
+   info - The imported package 'fl_chart' isn't a dependency of the importing package - lib\screens\reports_screen.dart:3:8 - depend_on_referenced_packages
+  error - The name 'SectionTitle' isn't a class - lib\screens\reports_screen.dart:21:21 - creation_with_non_type
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reports_screen.dart:55:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\reports_screen.dart:58:46 - deprecated_member_use
+  error - The getter 'coralLight' isn't defined for the type 'AppColors' - lib\screens\reports_screen.dart:114:38 - undefined_getter
+   info - The imported package 'intl' isn't a dependency of the importing package - lib\screens\requests_screen.dart:3:8 - depend_on_referenced_packages
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\requests_screen.dart:200:65 - deprecated_member_use
+  error - The name 'SectionTitle' isn't a class - lib\screens\submit_screen.dart:44:21 - creation_with_non_type
+  error - The method 'FBDropdown' isn't defined for the type '_SubmitScreenState' - lib\screens\submit_screen.dart:74:11 - undefined_method
+  error - The method 'FBDropdown' isn't defined for the type '_SubmitScreenState' - lib\screens\submit_screen.dart:89:24 - undefined_method
+  error - The method 'FBDropdown' isn't defined for the type '_SubmitScreenState' - lib\screens\submit_screen.dart:106:24 - undefined_method
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\submit_screen.dart:205:36 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\screens\submit_screen.dart:277:26 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\submit_screen.dart:280:39 - deprecated_member_use
+  error - Invalid constant value - lib\screens\submit_screen.dart:287:63 - invalid_constant
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\submit_screen.dart:287:73 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\submit_screen.dart:293:40 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\volunteer_screen.dart:92:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\volunteer_screen.dart:106:33 - deprecated_member_use
+  error - The class '_VolunteersScreenState' doesn't have an unnamed constructor - lib\screens\volunteers_screen.dart:11:44 - new_with_undefined_constructor_default
+warning - The declaration '<unnamed>' isn't referenced - lib\screens\volunteers_screen.dart:14:7 - unused_element
+  error - The method 'FBDropdown' isn't defined for the type '_VolunteersScreenState' - lib\screens\volunteers_screen.dart:155:9 - undefined_method
+  error - The method '_buildMatchResults' isn't defined for the type '_VolunteersScreenState' - lib\screens\volunteers_screen.dart:177:55 - undefined_method
+  error - Constructors can't have a return type - lib\screens\volunteers_screen.dart:182:3 - constructor_with_return_type
+  error - The name of a constructor must match the name of the enclosing class - lib\screens\volunteers_screen.dart:182:10 - invalid_constructor_name
+  error - Expected an identifier - lib\screens\volunteers_screen.dart:182:31 - missing_identifier
+  error - Expected an identifier - lib\screens\volunteers_screen.dart:182:36 - missing_identifier
+  error - Expected an identifier - lib\screens\volunteers_screen.dart:182:40 - missing_identifier
+  error - Expected an identifier - lib\screens\volunteers_screen.dart:182:45 - missing_identifier
+   info - Empty constructor bodies should be written using a ';' rather than '{}' - lib\screens\volunteers_screen.dart:182:48 - empty_constructor_bodies
+  error - A function body must be provided - lib\screens\volunteers_screen.dart:182:48 - missing_function_body
+  error - Expected an identifier - lib\screens\volunteers_screen.dart:182:48 - missing_identifier
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\volunteers_screen.dart:202:32 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\volunteers_screen.dart:257:74 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\volunteers_screen.dart:273:36 - undefined_getter
+  error - The method 'UrgencyBadge' isn't defined for the type '_VolunteersScreenState' - lib\screens\volunteers_screen.dart:342:19 - undefined_method
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\volunteers_screen.dart:344:38 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\screens\volunteers_screen.dart:345:35 - undefined_getter
+warning - The value of the field '_quantity' isn't used - lib\screens\waste_resource_screen.dart:18:10 - unused_field
+warning - The value of the field '_location' isn't used - lib\screens\waste_resource_screen.dart:19:10 - unused_field
+warning - The value of the local variable 'bg' isn't used - lib\screens\waste_resource_screen.dart:287:15 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\waste_resource_screen.dart:296:37 - deprecated_member_use
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:380:31 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:381:34 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:396:31 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:418:28 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:419:29 - undefined_getter
+  error - The getter 'greenLight' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:426:28 - undefined_getter
+  error - The getter 'green' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:427:29 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:434:28 - undefined_getter
+  error - The getter 'amberLight' isn't defined for the type 'AppColors' - lib\screens\waste_resource_screen.dart:442:28 - undefined_getter
+   info - Unnecessary braces in a string interpolation - lib\screens\waste_resource_screen.dart:494:14 - unnecessary_brace_in_string_interps
+   info - Unnecessary braces in a string interpolation - lib\screens\waste_resource_screen.dart:494:38 - unnecessary_brace_in_string_interps
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\waste_resource_screen.dart:642:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\waste_resource_screen.dart:646:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\waste_resource_screen.dart:707:50 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\services\firebase_service.dart:135:5 - avoid_print
+   info - 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\theme.dart:48:7 - deprecated_member_use
+   info - Use the null-aware marker '?' rather than a null check via an 'if' - lib\widgets\common.dart:31:9 - use_null_aware_elements
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\common.dart:58:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\common.dart:85:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\common.dart:122:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\common.dart:132:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\food_card.dart:45:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\food_card.dart:60:38 - deprecated_member_use
+  error - The name 'MyApp' isn't a class - test\widget_test.dart:16:35 - creation_with_non_type
+
