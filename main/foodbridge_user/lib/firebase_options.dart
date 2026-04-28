@@ -3,7 +3,6 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -42,7 +41,7 @@ class DefaultFirebaseOptions {
   }
 
   static FirebaseOptions get web => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_WEB']!,
+    apiKey: 'AIzaSyAyppF1F5EMyvuyXGbDTdJwwJ42xM8TIKs',
     appId: '1:249295351708:web:73bf8e04542a19a31a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -53,7 +52,7 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions get android => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_ANDROID']!,
+    apiKey: 'AIzaSyDAzzSAVniI1BeL1JJ-dbUbdwtfHTheLzs',
     appId: '1:249295351708:android:ef8452cb09bdd7571a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -62,7 +61,7 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions get ios => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_IOS']!,
+    apiKey: 'AIzaSyCCefc5aqjOIhF4eGnn9f2VDq0yxuhK50g',
     appId: '1:249295351708:ios:d763ced67290220f1a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -71,7 +70,7 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions get macos => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_MACOS']!,
+    apiKey: 'AIzaSyCCefc5aqjOIhF4eGnn9f2VDq0yxuhK50g',
     appId: '1:249295351708:ios:d763ced67290220f1a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
@@ -80,7 +79,7 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions get windows => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_WINDOWS']!,
+    apiKey: 'AIzaSyAyppF1F5EMyvuyXGbDTdJwwJ42xM8TIKs',
     appId: '1:249295351708:web:7674608b5c5df6231a2259',
     messagingSenderId: '249295351708',
     projectId: 'foodbridge-rohan-9cb08',
