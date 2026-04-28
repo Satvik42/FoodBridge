@@ -6,6 +6,7 @@ import '../admin_theme.dart';
 import '../models/models.dart';
 import '../services/firebase_service.dart';
 import '../services/app_state.dart';
+import '../services/auth_service.dart';
 import '../widgets/admin_widgets.dart';
 import 'admin_waste_resource_screen.dart';
 
@@ -216,7 +217,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ])),
       IconButton(
         icon: const Icon(Icons.logout_outlined, color: Colors.white70, size: 20),
-        onPressed: () => context.read<AppState>().clearUser(),
+        onPressed: () async {
+          await AuthService().signOut();
+          if (context.mounted) {
+            context.read<AppState>().clearUser();
+          }
+        },
       ),
     ],
   );
